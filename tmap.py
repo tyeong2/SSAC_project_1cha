@@ -179,7 +179,7 @@ def getDistance(start_list, end_list):
         "endRpFlag" : "G"
     }
 
-    r = requests.post(url, json=payload02, headers=headers)
+    r = requests.post(url, json=payload, headers=headers)
 
     jsonObj = json.loads(r.text)
 
