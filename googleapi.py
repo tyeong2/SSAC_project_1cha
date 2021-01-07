@@ -8,7 +8,7 @@ import urllib.request
 def goo_ttubuck(start, end) :
     mode            = "transit"
     departure_time  = "now"
-    key             = "AIzaSyBbkgiIFQrwYw18gdSZUk8E_8fNE01OE2E"
+    key             = "'''google api key'''"
 
     url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ start \
             + "&destination=" + end \
