@@ -148,13 +148,13 @@ def getDistance(start_list, end_list):
     endY = str(end_list[2])
 
     headers = {
-        "appkey": "l7xx1e9d4d1d08474905a13739121fe554b7",
+        "appkey": "",
         "version": "1",
         "callback": ""
     }
     
     payload = {
-        "appKey": "l7xx1e9d4d1d08474905a13739121fe554b7",
+        "appKey": "",
         "endX" : str(endX),
         "endY" : str(endY),
         "startX" : str(startX),
