@@ -32,7 +32,7 @@ def tmap_sample():
     loc3Y = "37.517711633406485"
 
     headers = {
-        "appkey" : "l7xx1e9d4d1d08474905a13739121fe554b7",
+        "appkey" : "",
         "version" : "1",
         "callback" : ""
     }
