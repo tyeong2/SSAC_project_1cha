@@ -5,7 +5,7 @@ import sys
 import urllib.request
 import urllib.parse
 
-key = "&key=AIzaSyBbkgiIFQrwYw18gdSZUk8E_8fNE01OE2E"
+key = ""
 # 지명 주소를 위/경도 주소로,
 base_url ='https://maps.googleapis.com/maps/api/geocode/json?language=ko'+\
                 '&address='
