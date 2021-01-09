@@ -120,10 +120,3 @@ def naver_parser(kwd): #네이버 데이터랩 테마키워드 파싱
     except:
         pass
 
-
-
-# search = '가든파이브'
-# naver_parser(search)
-# info_parser(search)
-
-make_csv()
