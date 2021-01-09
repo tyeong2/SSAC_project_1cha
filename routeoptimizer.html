@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>simpleMap</title>
+		<script	src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=l7xxe783a63ce3d04d7da721f0050ec53a04"></script>
+		<script src="res.js"></script>
+		<script type="text/javascript">
+
+var map;
+var marker;
+var marker_s, marker_e;
+
+//경로그림정보
+var drawInfoArr = [];
+
+function initTmap(){
+	// 1. 지도 띄우기
+	map = new Tmapv2.Map("map_div", {
+		center: new Tmapv2.LatLng(positions[0].lonlat[0], positions[0].lonlat[1]),
+		width : "100%",
+		height : "400px",
+		zoom : 15,
+		zoomControl : true,
+		scrollwheel : true
+	});
+	
+	var PTbounds = new Tmapv2.LatLngBounds();
+	
+	var headers = {}; 
+	//headers["appKey"]="l7xx1e9d4d1d08474905a13739121fe554b7";
+	headers["appKey"]="l7xxe783a63ce3d04d7da721f0050ec53a04";
+		
+	var payload = {
+				  "reqCoordType": "WGS84GEO",
+				  "resCoordType" : "EPSG3857",
+				  "startName": positions[0].title,
+				  "startX": String(positions[0].lonlat[1]),
+				  "startY": String(positions[0].lonlat[0]),
+				  "startTime": "202101091314",
+				  "endName": positions[1].title,
+				  "endX": String(positions[1].lonlat[1]),
+				  "endY": String(positions[1].lonlat[0]),
+				  "searchOption" : "2",
+				  "viaPoints": []
+		};
+	PTbounds.extend(new Tmapv2.LatLng(positions[0].lonlat[0],positions[0].lonlat[1]));
+	PTbounds.extend(new Tmapv2.LatLng(positions[1].lonlat[0],positions[1].lonlat[1]));
+	var lngX, latY;
+	var viaP = {};
+	for (var l = 2; l< positions.length; l++) {
+			lngX = String(positions[l].lonlat[1]);
+			latY = String(positions[l].lonlat[0]);
+			viaP = {
+				"viaPointId": String(l-1),
+				"viaPointName": positions[l].title,
+				"viaX": lngX,
+				"viaY": latY,
+				"viaTime": positions[l].stayTime,
+				"wishStartTime": "",
+				"wishEndTime": ""
+				};
+			payload.viaPoints.push(viaP);
+			PTbounds.extend(new Tmapv2.LatLng(latY,lngX));
+		};
+	console.log(payload)
+	
+	$.ajax({
+		type:"POST",
+		headers : headers,
+		url:"https://apis.openapi.sk.com/tmap/routes/routeOptimization10?version=1&format=json",//
+		async:false,
+		contentType: "application/json",
+		data: JSON.stringify(payload),
+		success:function(response){
+			console.log(response);
+			var resultData = response.properties;
+			var resultFeatures = response.features;
+			
+			// 결과 출력
+			var tDistance = "총 거리 : " + String(parseInt(resultData.totalDistance)/1000) + "km,  ";
+			var tTime = "총 시간 : " + String(parseInt(parseInt(resultData.totalTime)/60)) + "분,  ";
+			var tFare = "총 요금 : " + resultData.totalFare + "원";
+			
+			$("#result").text(tDistance+tTime+tFare);
+		
+			marker_s = new Tmapv2.Marker({
+				position : new Tmapv2.LatLng(positions[0].lonlat[0], positions[0].lonlat[1]),
+				icon : "http://tmapapi.sktelecom.com/upload/tmap/marker/pin_r_m_s.png",
+				iconSize : new Tmapv2.Size(24, 38),
+				map:map,
+				title:positions[0].title
+			});
+			
+			marker_e = new Tmapv2.Marker({
+				position : new Tmapv2.LatLng(positions[1].lonlat[0], positions[1].lonlat[1]),
+				icon : "http://tmapapi.sktelecom.com/upload/tmap/marker/pin_r_m_e.png",
+				iconSize : new Tmapv2.Size(24, 38),
+				map:map,
+				title:positions[1].title
+			});
+			
+			var geometry;
+			var properties;
+			var lonlat;
+			var convlonlat;
+			var title;
+			for(var k in resultFeatures) {
+				//var geomet = resultFeatures[k].geometry;
+				//var propert = resultFeatures[k].properties;
+				geometry = resultFeatures[k].geometry;
+				properties = resultFeatures[k].properties;
+				if (geometry.type == "Point") {
+					if (properties.pointType == "S") { 
+						continue; 
+					};
+					if (properties.pointType == "E") { 
+						continue; 
+					};
+					lonlat = new Tmapv2.Point(geometry.coordinates[0],geometry.coordinates[1]);
+					convlonlat = new Tmapv2.Projection.convertEPSG3857ToWGS84GEO(lonlat);
+					title = properties.viaPointName.split(" ")[1];
+					//Marker 객체 생성.
+					marker = new Tmapv2.Marker({
+						position : convlonlat, //Marker의 중심좌표 설정.
+						icon : "http://tmapapi.sktelecom.com/upload/tmap/marker/pin_b_m_"+properties.index+".png",
+						iconSize : new Tmapv2.Size(24, 38),
+						map : map,
+						title : title								
+					});
+				};
+			};
+			
+			map.fitBounds(PTbounds);
+			
+			for(var i in resultFeatures) {
+				geometry = resultFeatures[i].geometry;
+				properties = resultFeatures[i].properties;
+				var polyline_;
+				
+				drawInfoArr = [];
+				
+				if(geometry.type == "LineString") {
+					for(var j in geometry.coordinates){
+						// 경로들의 결과값(구간)들을 포인트 객체로 변환 
+						var latlng = new Tmapv2.Point(geometry.coordinates[j][0], geometry.coordinates[j][1]);
+						// 포인트 객체를 받아 좌표값으로 변환
+						var convertPoint = new Tmapv2.Projection.convertEPSG3857ToWGS84GEO(latlng);
+						// 포인트객체의 정보로 좌표값 변환 객체로 저장
+						var convertChange = new Tmapv2.LatLng(convertPoint._lat, convertPoint._lng);
+						
+						drawInfoArr.push(convertChange);
+					};
+
+					polyline_ = new Tmapv2.Polyline({
+						path : drawInfoArr,
+						strokeColor : "#FF0000",
+						strokeWeight: 6,
+						map : map
+					});
+				};
+			};
+		},
+		error:function(request,status,error){
+			console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+		}
+	});
+}	
+	
+</script>
+<body onload="initTmap()"><!-- 맵 생성 실행 -->
+	<p id="result"></p>
+
+		
+		<div id="map_wrap" class="map_wrap">
+			<div id="map_div"></div>
+		</div>
+	</body>
+</html>	
