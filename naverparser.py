@@ -74,24 +74,15 @@ def tag_parser(search):
     soup = BeautifulSoup(html,'html.parser')
 
     theme = soup.find_all('div', class_='theme_kwd_area')
-    #테마 키워드가 없는 경우
-    if theme == []:
-        return ['NaN', 'NaN', 'NaN']
-    
-    for t in theme:
-        theme_list = t.find_all('li', class_='list_item')
-
+    if theme == []: #테마 키워드가 안 나오는 경우
+        # return ['NaN', 'NaN', 'NaN']
+        return 'NaN'
+    list_theme = theme[0].find('ul', class_='list_theme')
+    list_item = list_theme.find_all('li',class_='list_item')
     kwd_list = []
-    for kwd in theme_list:
-        kwd_list.append(kwd.get_text(strip=True))
+    for ul in list_item:
+        li = ul.find_all('span',class_='kwd')
+        for i in li:
+            kwd_list.append(i.text.strip(', '))
 
-    tmp = ['NaN', 'NaN', 'NaN']
-    for kwd in kwd_list:
-        if kwd[0:3] == '분위기':
-            tmp[0] = kwd[3:]
-        elif kwd[0:3] == '인기토':
-            tmp[1] = kwd[4:]
-        elif kwd[0:3] == '찾는목':
-            tmp[2] = kwd[4:]
-
-    return tmp
+    return str(kwd_list).strip('[]')
