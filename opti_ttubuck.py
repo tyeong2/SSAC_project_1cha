@@ -11,7 +11,7 @@ import itertools
 def goo_ttubuck(d_time,start, end) :
     mode            = "transit"
     departure_time  = str(int(d_time))
-    key             = "AIzaSyC9KDDszqu_5bs-TwqaY-s6uBI7kkPRgjQ"
+    key             = "구글"
     start_point     = str(start[2]) + "," + str(start[1])
     end_point       = str(end[2]) + "," + str(end[1])
 
@@ -51,7 +51,7 @@ def goo_ttubuck(d_time,start, end) :
 
 def getDistanceWalk(start, end):
     url = 'https://apis.openapi.sk.com/tmap/routes/pedestrian'
-    appkey = "l7xx4008abae9aa64ccf8049a94ad379ad57"
+    appkey = "티맵키"
 
     start_name = start[0]
     startX = str(start[1])
