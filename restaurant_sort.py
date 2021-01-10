@@ -8,7 +8,7 @@ from pyproj import Proj, transform
 #-*- coding: utf-8 -*-
 
 def rest_sort(j_list):
-    data=pd.read_csv("DB_rest.csv")
+    data=pd.read_csv("맛집 DB") # 맛집 DB 파일 
     
     a, b = data['좌표(x)'],data['좌표(y)']
     N_point = data['평점'].values.tolist()
