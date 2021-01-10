@@ -5,7 +5,7 @@ import sys
 import urllib.request
 import urllib.parse
 
-key = ""
+key = "&key=AIzaSyBbkgiIFQrwYw18gdSZUk8E_8fNE01OE2E"
 # 지명 주소를 위/경도 주소로,
 base_url ='https://maps.googleapis.com/maps/api/geocode/json?language=ko'+\
                 '&address='
@@ -20,11 +20,11 @@ for hanaddr in x:
     # 위치 정보만 뽑기
     for i in addr['results']:
         a = (i['geometry']['location'])
-        li = list(a.values())
+        li = list(a.values())#밸류 값만 리스트에 담긴다.
 
 
-    print(li[0],file=h)
-    print(li[1],file=f)
+    print(li[0],file=h)#위도 저장
+    print(li[1],file=f)#경도 저장
 
 
 f.close
