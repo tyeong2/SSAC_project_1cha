@@ -6,12 +6,20 @@ import time
 import pytz
 #-*- coding: utf-8 -*-
 
-#DB불러오기
-data=pd.read_csv("C:\\python_atom\\DB_V23.csv",sep=',',engine='python')
+user=open("C:\\python_atom\\user.txt",mode='r',encoding='utf-8')#메모장에 있는 나이,성별,여행날짜,출발지,도착지,여행시간,테마,주차여부 정보를 불어옴
+data=pd.read_csv("C:\\python_atom\\DB_V23.csv",sep=',',engine='python')#각 관광지에 해당하는 정보DB를 불러옴
+
+line = user.read().split()#개인이 선택한 항목들을 한줄씩 불러옴
+print(line)
+
 
 
 #나이와 성별을 입력하여 해당 정보와 일치하는 칼럼을 리턴
 def personal(age,gender):
+    global age_result
+
+
+
     if age=='10':
         age_result=(data['10대']) #10대인 경우 10대의 관광지 검색 빈도가 있는 컬럼을 불러옴
 
@@ -30,7 +38,7 @@ def personal(age,gender):
     elif age=='60':
         age_result=(data['60대'])
 
-
+    global gender_result
     #성별에 따른 관광지 검색량 컬럼 불러오기
     if gender=='man':
         gender_result=(data['남자'])
@@ -136,13 +144,13 @@ def parking(park):#관광지에 주차장이 있다면 추가점수 5점
 
 if __name__ == "__main__":
 
-    age_result,gender_result = personal('10','man')#나이와 성별 입력
-    date_result,stop=season('2010-10-10')#날짜입력
+    age_result,gender_result = personal(line[0],line[1])#나이와 성별 입력
+    date_result,stop=season(line[2])#날짜입력
 
     total=((age_result*0.3)+(gender_result*0.3)+(date_result*0.4)) #관광지 토탈점수가 계산되는 식
 
-    getTheme(['이국적인'])#여행테마 입력
-    parking('가능')#주차여부 확인
+    getTheme([line[6]])#여행테마 입력
+    parking(line[7])#주차여부 확인
 
     for n in stop:#여행날짜에 휴일인 관광지는 0점 처리
         total[n]=0
@@ -162,7 +170,7 @@ if __name__ == "__main__":
         recommand.append(compare.index(top50[num]))#기존 인덱스의 관광지 순서로 recommand리스트에 추가됨
         num=num+1
 
-    new_recommand = []
+    new_recommand = [] #인덱스 중복값 제거
     for v in recommand:
         if v not in new_recommand:
             new_recommand.append(v)
@@ -172,8 +180,12 @@ if __name__ == "__main__":
     #추천 인덱스에 해당하는 정보 넣기
     res=data[['검색명','주소','운영시간','영업시작','영업종료','주차장소','소요시간(분)','사진','설명','휴일','전화번호','홈페이지','키워드']][data['인덱스'].isin(new_recommand)]
 
+    print(new_recommand)
+    
 
-    #6) csv파일로 저장
+    #6) 파일로 저장
     res.to_csv("c:\\test\\final.csv",encoding="UTF-8",index=True)
     #7) 엑셀로 저장
     res.to_excel("c:\\test\\final.xls",index=True)
+
+    user.close()
