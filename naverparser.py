@@ -5,7 +5,8 @@ from selenium import webdriver
 import time
 import pandas as pd
 
-def info_parser(kwd): #네이버 장소검색 정보 파싱
+#네이버 장소검색 정보 파싱
+def info_parser(kwd):
     baseUrl = 'https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query='
     url = baseUrl + quote_plus(kwd)
     html = urllib.request.urlopen(url).read()
@@ -13,93 +14,67 @@ def info_parser(kwd): #네이버 장소검색 정보 파싱
 
     result = []
     result.append(kwd)
-
+    
+    #검색결과에서 정보가 나온다면
     try:
         info = soup.find('div',class_='list_bizinfo')
         infolist = info.find_all('div',class_='list_item')
         try:
+            #전화번호
             tel = info.find('div',class_='txt').text
-            # print(tel)
             result.append(tel)
         except:
             result.append('Nan')
 
         try:
-            addr = info.find('span',class_='addr').text
-            # print(addr)
+            #주소
+            addr = info.find('span',class_='addr').text            
             result.append(addr)
         except:
             result.append('Nan')
 
         try:
+            #운영시간
             runtime = []
             biztime = info.find_all('div', class_="biztime")
             for r in biztime:
-                runtime.append(r.text)
-            # print(runtime)
+                runtime.append(r.text)            
             result.append(runtime)
         except:
             result.append('NaN')
 
         try:
-            homepage = info.find('div', class_="list_item list_item_homepage").find('a', class_='biz_url').get('href')
-            # print(homepage)
+            #홈페이지
+            homepage = info.find('div', class_="list_item list_item_homepage").find('a', class_='biz_url').get('href')            
             result.append(homepage)
         except:
             result.append('NaN')
 
         try:
+            #주차 가능 여부
             if '주차' in infolist[-1].find('div', class_='txt').get_text().split(','):
                 parking = '주차가능'
             else:
-                parking = '주차불가'
-            # print(parking)
+                parking = '주차불가'            
             result.append(parking)
         except:
             result.append('NaN')
+            
+    #검색 결과에서 정보가 없다면
     except:
         return [kwd,'NaN','NaN','NaN','NaN','NaN']
 
     return result
 
-
-def make_csv(): #csv 파일로 저장
-    title = pd.read_csv('empty.csv')
-
-    col_name = []
-    col_tel = []
-    col_addr = []
-    col_runtime = []
-    col_homepage = []
-    col_parking = []
-
-    for t in title['title']:
-        print(t)
-        res = info_parser(t)
-        col_name.append(res[0])
-        col_tel.append(res[1])
-        col_addr.append(res[2])
-        col_runtime.append(res[3])
-        col_homepage.append(res[4])
-        col_parking.append(res[5])
-
-    naver = pd.DataFrame()
-    naver['이름'] = pd.Series(col_name)
-    naver['전화번호'] = pd.Series(col_tel)
-    naver['주소'] = pd.Series(col_addr)
-    naver['영업시간'] = pd.Series(col_runtime)
-    naver['홈페이지'] = pd.Series(col_homepage)
-    naver['주차'] = pd.Series(col_parking)
-
-    naver.to_csv("naverparsing.csv", encoding='UTF8', index=True)
-
-def naver_parser(kwd): #네이버 데이터랩 테마키워드 파싱
+#네이버 데이터랩 테마키워드 파싱
+def naver_parser(kwd):
     baseUrl = 'https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query='
     url = baseUrl + quote_plus(kwd)
     html = urllib.request.urlopen(url).read()
     soup = BeautifulSoup(html,'html.parser')
     driver = webdriver.Chrome(executable_path="C:\\pythonProject\\chromedriver")
     try:
+        #테마키워드 영역
         title = soup.find_all('a', class_ ="api_more_theme")
         newurl = title[0].get('href')
 
