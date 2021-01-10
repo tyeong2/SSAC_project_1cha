@@ -136,14 +136,6 @@ def parking(park):#관광지에 주차장이 있다면 추가점수 5점
     else:
         pass
 
-def blog():
-    k=0
-    while k <936:
-        if data['리뷰수'][data['인덱스']==k].empty:
-            k+=1
-            return 0
-        else:
-            
     
 
 if __name__ == "__main__": 
