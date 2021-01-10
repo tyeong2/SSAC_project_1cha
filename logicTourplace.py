@@ -6,7 +6,7 @@ import time
 import pytz
 #-*- coding: utf-8 -*-
 
-user=open("C:\\python_atom\\user.txt",mode='r',encoding='utf-8')#메모장에 있는 나이,성별,여행날짜,출발지,도착지,여행시간,테마,주차여부 정보를 불어옴
+user=open("C:\\Program Files\\Python39\\user1.txt",mode='r',encoding='utf-8')#메모장에 있는 나이,성별,여행날짜,출발지,도착지,여행시간,테마,주차여부 정보를 불어옴
 data=pd.read_csv("C:\\python_atom\\DB_V26.csv",sep=',',engine='python')#각 관광지에 해당하는 정보DB를 불러옴
 
 line = user.read().split('\n')#개인이 선택한 항목들을 한줄씩 불러옴
@@ -106,7 +106,7 @@ def getTheme(theme):#여행테마를 입력하면 해당 테마를 가지고 있
                 '데이트' : ['기념일', '데이트', '발렌타인데이', '프로포즈', '크리스마스파티', '핫플레이스', '연인_배우자',]
                 }
     k=0
-    while k <936:
+    while k <844:
 
         if data['키워드'][data['인덱스']==k].empty:
             k+=1
@@ -155,7 +155,7 @@ def blog():#블로그 리뷰수에 비례하여 관광지 추가점수를 부여
 def tourMain():
     age_result,gender_result = personal(line[0],line[1])#나이와 성별 입력
     date_result,stop=season(line[2])#날짜입력
-
+    global total
     total=((age_result*0.4)+(gender_result*0.4)+(date_result*0.2)) #관광지 토탈점수가 계산되는 식
 
     getTheme([line[7]])#여행테마 입력
@@ -205,5 +205,5 @@ def tourMain():
     re.to_excel("c:\\test\\final2.xls",index=True)
 
     user.close()
-    
+
 tourMain()
