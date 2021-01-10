@@ -7,9 +7,9 @@ from pyproj import Proj, transform
 
 #-*- coding: utf-8 -*-
 
+data=pd.read_excel('DB_V27.xlsx', sheet_name=1)
+
 def rest_sort(j_list):
-    data=pd.read_csv("맛집 DB") # 맛집 DB 파일 
-    
     a, b = data['좌표(x)'],data['좌표(y)']
     N_point = data['평점'].values.tolist()
     
@@ -89,8 +89,26 @@ def transpose(matrix):
     return trans_matrix
 
 
-if __name__ == "__main__":
-
-    res_idx = rest_sort([[126.97701954045031,37.57959997444933],[126.96506706901754, 37.53570566852152]])
+def restaurant_sort():
+    user=open("tour.txt",mode='r',encoding='utf-8')
+    via_list = user.readline().strip('\n').split(',')[:-1]
     
-    print(res_idx)
+    db = pd.read_excel('DB_V27.xlsx', sheet_name=0)
+    via_coodi = []
+    
+    for n in via_list:
+        lng = db[['좌표(x)']][db['검색명'] == n].iloc[0,0]
+        lat = db[['좌표 (y)']][db['검색명'] == n].iloc[0,0]
+        via_coodi.append([lng,lat])
+    
+    res_idx = rest_sort(via_coodi)
+    
+    re=pd.DataFrame(columns =['이름','주소','좌표(x)','좌표(y)','메뉴','사진','운영시간','영업시작','영업종료','설명','평점','전화번호','해시태그'])
+    
+    for x in res_idx:
+        res=data[['이름','주소','좌표(x)','좌표(y)','메뉴','사진','운영시간','영업시작','영업종료','설명','평점','전화번호','해시태그']][data['번호']==x+1]
+        re=re.append(res,ignore_index=True)
+        
+    re.to_csv("rest_sorted.csv",encoding = "UTF-8",index = True)
+
+    re.to_excel("rest_sorted.xlsx",index = True)
