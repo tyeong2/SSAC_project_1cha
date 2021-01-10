@@ -1,9 +1,6 @@
-import csv
 import pandas as pd
-import numpy as np
 import numbers
 import math
-from pyproj import Proj, transform
 
 #-*- coding: utf-8 -*-
 
@@ -34,7 +31,6 @@ def rest_sort(j_list):
             dis_max = max(rest_distance)
             rest_distance_point.append(list(map(lambda x: (dis_max - x)*5/dis_max,rest_distance)))
         
-        res_idx = []
         res_dispoint = list(map(lambda x : max(x),transpose(rest_distance_point)))
         res_point = list(map(lambda x: x[0] + x[1], zip(res_dispoint,N_point)))
         return list_ranking(res_point)[:30]
@@ -89,7 +85,7 @@ def transpose(matrix):
     return trans_matrix
 
 
-def restaurant_sort():
+def restaurant_Sort():
     user=open("tour.txt",mode='r',encoding='utf-8')
     via_list = user.readline().strip('\n').split(',')[:-1]
     
