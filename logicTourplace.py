@@ -178,10 +178,10 @@ if __name__ == "__main__":
 
 
     #추천 인덱스에 해당하는 정보 넣기
-    res=data[['검색명','주소','운영시간','영업시작','영업종료','주차장소','소요시간(분)','사진','설명','휴일','전화번호','홈페이지','키워드']][data['인덱스'].isin(new_recommand)]
-
-    print(new_recommand)
+    res=data[['관광지명','검색명','주소','좌표(x)','좌표 (y)','운영시간','영업시작','영업종료','주차장소','소요시간(분)','사진','설명','휴일','전화번호','홈페이지','키워드']][data['인덱스'].isin(new_recommand)]
     
+    print(new_recommand)
+
 
     #6) 파일로 저장
     res.to_csv("c:\\test\\final.csv",encoding="UTF-8",index=True)
