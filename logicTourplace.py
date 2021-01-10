@@ -127,7 +127,7 @@ def getTheme(theme):#여행테마를 입력하면 해당 테마를 가지고 있
 
     
 def parking(park):#관광지에 주차장이 있다면 추가점수 5점
-    if park=='가능':
+    if park=='자동차':
         parkTable=data[['인덱스']][data['주차장소'].isin(['가능'])]#주차가 가능한 관광지를 찾음
         df2 = pd.DataFrame(parkTable)
         park_result = df2['인덱스'].tolist()
@@ -136,7 +136,14 @@ def parking(park):#관광지에 주차장이 있다면 추가점수 5점
     else:
         pass
 
-
+def blog():
+    k=0
+    while k <936:
+        if data['리뷰수'][data['인덱스']==k].empty:
+            k+=1
+            return 0
+        else:
+            
     
 
 if __name__ == "__main__": 
@@ -146,8 +153,8 @@ if __name__ == "__main__":
     
     total=((age_result*0.4)+(gender_result*0.4)+(date_result*0.2)) #관광지 토탈점수가 계산되는 식
 
-    getTheme([line[6]])#여행테마 입력
-    parking(line[7])#주차여부 확인
+    getTheme([line[7]])#여행테마 입력
+    parking(line[6])#주차여부 확인
     
     for n in stop:#여행날짜에 휴일인 관광지는 0점 처리
         total[n]=0
