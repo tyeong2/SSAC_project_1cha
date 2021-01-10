@@ -16,33 +16,33 @@ print(line)
 
 #나이와 성별을 입력하여 해당 정보와 일치하는 칼럼을 리턴
 def personal(age,gender):
-    
+
     if age=='10':
         age_result=(data['10대']) #10대인 경우 10대의 관광지 검색 빈도가 있는 컬럼을 불러옴
-        
+
     elif age=='20':
         age_result=(data['20대'])
-        
+
     elif age=='30':
         age_result=(data['30대'])
-        
+
     elif age=='40':
         age_result=(data['40대'])
-        
+
     elif age=='50':
         age_result=(data['50대'])
-        
+
     elif age=='60':
         age_result=(data['60대'])
-        
-    
+
+
     #성별에 따른 관광지 검색량 컬럼 불러오기
     if gender=='man':
-        gender_result=(data['남자']) 
-       
+        gender_result=(data['남자'])
+
     elif gender=='woman':
         gender_result=(data['여자'])
-    
+
     return age_result,gender_result
 
 
@@ -51,18 +51,18 @@ def season(date):#여행가고자 하는 날짜를 입력하면, 해당 계절 �
     d = datetime.datetime.strptime(date,'%Y-%m-%d')
     if d.month>= 3 and d.month <=6:
         date_result=(data['봄'])#3월부터 6월에 사용자가 검색한 관광지 빈도를 불러옴
-        
+
     elif d.month>=7 and d.month <=8:
         date_result=(data['여름'])#7월부터 8월에 사용자가 검색한 관광지 빈도를 불러옴
-        
+
     elif d.month>=9 and d.month <=11:
         date_result=(data['가을'])#9월부터 11월에 사용자가 검색한 관광지 빈도를 불러옴
-        
+
     elif d.month==1 or d.month ==2 or d.month==12:
         date_result=(data['겨울'])#12월부터 2월에 사용자가 검색한 관광지 빈도를 불러옴
-    
-        
-        
+
+
+
     days=['월','화','수','목','금','토','일']
     r=d.weekday() #여행날짜의 요일을 구함
     day=days[r]
@@ -76,7 +76,7 @@ def season(date):#여행가고자 하는 날짜를 입력하면, 해당 계절 �
         else:
             pass
         i=i+1
-       
+
     return date_result,stop
 
 
@@ -84,7 +84,7 @@ def season(date):#여행가고자 하는 날짜를 입력하면, 해당 계절 �
 
 def getTheme(theme):#여행테마를 입력하면 해당 테마를 가지고 있는 여향지에 추가점수 5점
     data['키워드'] = data['키워드'].astype(str)
-    
+
     category = {'이국적인': ['유러피안스타일', '이국적'],
                '고급스러운' : ['고급스러운', '고급진', '근사한', '기품있는', '멋스러운', '세련된', '트렌디한', '화려한',
                          '우아한', '퀄리티있는', '웅장한'],
@@ -107,60 +107,55 @@ def getTheme(theme):#여행테마를 입력하면 해당 테마를 가지고 있
                 }
     k=0
     while k <936:
-    
+
         if data['키워드'][data['인덱스']==k].empty:
             k+=1
             return 0
         else:
             cmp = []    #비교할 대상
-            
+
             for t in theme[0].split(',')[:-1]:
                 cmp.extend(category[t]) #사용자가 선택한 테마의 키워드들을 비교 리스트에 담는다.
             kwd = data['키워드'][data['인덱스']==k].iloc[0]
             for elem in kwd.split(','): # 해당 관광지의 키워드들을 하나씩 비교
-                
+
                 if elem.strip() in cmp:
                     total[k] += 5   #관광지의 테마키워드가 사용자가 선택한 테마의 키워드 리스트에 포함될 시에 점수 상승
             k+=1
-    
 
 
-    
+
+
 def parking(park):#관광지에 주차장이 있다면 추가점수 5점
     if park=='자동차':
         parkTable=data[['인덱스']][data['주차장소'].isin(['가능'])]#주차가 가능한 관광지를 찾음
         df2 = pd.DataFrame(parkTable)
         park_result = df2['인덱스'].tolist()
         for j in park_result:
-            total[j]=total[j]+5          
+            total[j]=total[j]+5
     else:
         pass
 
-    
+
 def blog():#블로그 리뷰수에 비례하여 관광지 추가점수를 부여
     blogTable=data['리뷰수'] #블로그 리뷰수를 불러옴
     df3 = pd.DataFrame(blogTable)
     blog_result = df3['리뷰수'].tolist()
-    
+
     max_blog=max(blog_result)
     blog_ans=list(map(lambda x : x/max_blog*5, blog_result))# 가장 많은 리뷰수를 기준으로 5점을 부여하고 리뷰수에 비례해 점수 차등부여
     i=0
     while i <len(total):
         total[i]=total[i]+blog_ans[i]
         i=i+1
-    
-    
-    
-    
 
-                   
-    
 
-if __name__ == "__main__": 
 
+
+def tourMain():
     age_result,gender_result = personal(line[0],line[1])#나이와 성별 입력
     date_result,stop=season(line[2])#날짜입력
-    
+
     total=((age_result*0.4)+(gender_result*0.4)+(date_result*0.2)) #관광지 토탈점수가 계산되는 식
 
     getTheme([line[7]])#여행테마 입력
@@ -168,46 +163,47 @@ if __name__ == "__main__":
     blog()#리뷰개수에 따른 관광지 추가점수
     for n in stop:#여행날짜에 휴일인 관광지는 0점 처리
         total[n]=0
-    
-    
+
+
     m=list(total)#관광지 종합 점수들을 리스트에 넣고
     compare=list(total)#원본을 복사
     m.sort(reverse=True)#원본을 점수가 큰 순서대로 나열
-    
-    
+
+
     top50=[]#점수 크기 순 TOP50이 담길 리스트
     recommand=[]#TOP50 관광지의 인덱스 리스트
-    
+
     num=0
     while num < 50:
         top50.append(m[num])#점수가 큰 순서대로 50개의 관광지가 top50리스트에 추가됨
         recommand.append(compare.index(top50[num]))#기존 인덱스의 관광지 순서로 recommand리스트에 추가됨
         num=num+1
-        
+
     new_recommand = [] #인덱스 중복값 제거
     for v in recommand:
         if v not in new_recommand:
             new_recommand.append(v)
-            
-    
-    
+
+
+
     #추천 인덱스에 해당하는 정보 넣기
     re=pd.DataFrame(columns =['관광지명','검색명','주소','좌표(x)','좌표 (y)','운영시간','영업시작','영업종료','주차장소','소요시간(분)','사진','설명','휴일','전화번호','홈페이지','키워드'])
-    
+
     for x in new_recommand:#인덱스 순위대로 데이터프레임에 넣기
         res=data[['관광지명','검색명','주소','좌표(x)','좌표 (y)','운영시간','영업시작','영업종료','주차장소','소요시간(분)','사진','설명','휴일','전화번호','홈페이지','키워드']][data['인덱스']==x]
         re=re.append(res,ignore_index=True)
-    
+
     print(new_recommand)
     print(top50)
-    
-        
 
-    
+
+
+
     #6) 파일로 저장
-    re.to_csv("c:\\test\\final.csv",encoding="UTF-8",index=True)
+    re.to_csv("c:\\test\\final2.csv",encoding="UTF-8",index=True)
     #7) 엑셀로 저장
-    re.to_excel("c:\\test\\final.xls",index=True)
-    
+    re.to_excel("c:\\test\\final2.xls",index=True)
+
     user.close()
     
+tourMain()
