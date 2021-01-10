@@ -5,7 +5,7 @@ import urllib.parse
 import webbrowser
 
 def getGeocode(name):
-    key = "&key=AIzaSyBbkgiIFQrwYw18gdSZUk8E_8fNE01OE2E"
+    key = "&key="
     base_url = 'https://maps.googleapis.com/maps/api/geocode/json?language=ko&address='
     search = urllib.parse.quote(name)
     addr = json.loads(urllib.request.urlopen(base_url + search + key).read().decode('utf-8'))
