@@ -2,9 +2,10 @@ import pandas as pd
 
 def getTheme(name, theme):
     matched = 0  #점수
-    db = pd.read_excel('DB_V17.xlsx', engine='openpyxl')
+    db = pd.read_excel('DB_V21.xlsx', engine='openpyxl')
     db['키워드'] = db['키워드'].astype(str)
-    # db = pd.read_csv('DB_V17.csv')
+    
+    #비교할 테마 그룹
     category = {'이국적인': ['유러피안스타일', '이국적'],
                '고급스러운' : ['고급스러운', '고급진', '근사한', '기품있는', '멋스러운', '세련된', '트렌디한', '화려한',
                          '우아한', '퀄리티있는', '웅장한'],
