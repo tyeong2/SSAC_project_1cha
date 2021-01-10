@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+from datetime import datetime
 import json
 import ssl
 import urllib.request
@@ -7,10 +8,10 @@ import requests
 from json import loads
 import itertools
 
-def goo_ttubuck(start, end) :
+def goo_ttubuck(d_time,start, end) :
     mode            = "transit"
-    departure_time  = "now"
-    key             = "구글 api key"
+    departure_time  = str(int(d_time))
+    key             = "AIzaSyC9KDDszqu_5bs-TwqaY-s6uBI7kkPRgjQ"
     start_point     = str(start[2]) + "," + str(start[1])
     end_point       = str(end[2]) + "," + str(end[1])
 
@@ -50,7 +51,7 @@ def goo_ttubuck(start, end) :
 
 def getDistanceWalk(start, end):
     url = 'https://apis.openapi.sk.com/tmap/routes/pedestrian'
-    appkey = "티맵 api key"
+    appkey = "l7xx4008abae9aa64ccf8049a94ad379ad57"
 
     start_name = start[0]
     startX = str(start[1])
@@ -83,12 +84,13 @@ def getDistanceWalk(start, end):
 
     return jsonObj['features'][0]['properties']['totalTime']
 
-def opti_ttubuck(via):
+def opti_ttubuck(d_time,via):
+    timestamp = time.mktime(datetime.strptime(d_time, '%Y-%m-%d %H:%M:%S').timetuple())+32400
     check = [[i for i in range(len(via))] for j in range(len(via))]
     s_distance = list(itertools.combinations((list(range(len(via)))),2))
     
     for com in s_distance:
-        beh = goo_ttubuck(via[com[0]], via[com[1]])
+        beh = goo_ttubuck(timestamp, via[com[0]], via[com[1]])
         dobo = getDistanceWalk(via[com[0]], via[com[1]])
         
         check[com[0]][com[1]] = min(beh,dobo)
@@ -115,7 +117,7 @@ def opti_ttubuck(via):
         res_list.append(via[idx][0])
     
     return res_list
-    
+'''  
 if __name__ == '__main__':
 
     startList = ['노원', 127.07298186928676, 37.625573966660795]
@@ -126,7 +128,7 @@ if __name__ == '__main__':
     
     via_list = [startList,via01,via02,via03,endList]
     
-    f_res = opti_ttubuck(via_list)
+    f_res = opti_ttubuck('2021-01-10 12:12:12',via_list)
     
     print(f_res)
-    
+'''
