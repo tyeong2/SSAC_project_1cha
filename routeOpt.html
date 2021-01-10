@@ -69,6 +69,7 @@ function initTmap(){
 		};
 	console.log(payload)
 	
+	// payload 데이터로 API 데이터 
 	$.ajax({
 		type:"POST",
 		headers : headers,
@@ -76,7 +77,7 @@ function initTmap(){
 		async:false,
 		contentType: "application/json",
 		data: JSON.stringify(payload),
-		success:function(response){
+		success:function(response){ //성공적으로 응답을 받았을 경우 실행
 			console.log(response);
 			var resultData = response.properties;
 			var resultFeatures = response.features;
