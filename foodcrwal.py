@@ -5,26 +5,29 @@ import time
 import pandas  as pd
 import re
 
-#4) 별점  / 리뷰 내용/ 작성자  / 작성일  / 공감 횟수  / 비공감 횟수
+
 telephone=[]
 weektime=[]
 pic=[]
 stat=[]
 
+#크롬드라이버를 이용하여 웹크롤링 실시
 driver  =  webdriver . Chrome ( executable_path ="C:\\test\\chromedriver" )
 driver.get("https://www.naver.com")
 driver.implicitly_wait(1)
 
-query  ="시작"
+
+
+query  ="시작" #오류 방지를 위해서 임의의 값을 검색후 시작
 element  = driver.find_element_by_id("query")
 element.click()
 element.send_keys(query+'\n')
 
 
-x = open("c:\\test\\foodlist1.txt",'r', encoding='UTF-8')
-for list in x:
+x = open("c:\\test\\foodlist1.txt",'r', encoding='UTF-8')#음식점 이름목록이 담긴 텍스트 파일 호출
+for list in x:#한줄씩 검색창에 입력하기
     query  = list
-    driver.back()
+    driver.back()#하나의 정보를 입력해서 받아오면 웹페이지 뒤로가기
     element  = driver.find_element_by_id("query")
     element.click()
     element.send_keys(query+'\n')
