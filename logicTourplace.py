@@ -7,7 +7,7 @@ import pytz
 #-*- coding: utf-8 -*-
 
 user=open("C:\\python_atom\\user.txt",mode='r',encoding='utf-8')#메모장에 있는 나이,성별,여행날짜,출발지,도착지,여행시간,테마,주차여부 정보를 불어옴
-data=pd.read_csv("C:\\python_atom\\DB_V23.csv",sep=',',engine='python')#각 관광지에 해당하는 정보DB를 불러옴
+data=pd.read_csv("C:\\python_atom\\DB_V26.csv",sep=',',engine='python')#각 관광지에 해당하는 정보DB를 불러옴
 
 line = user.read().split('\n')#개인이 선택한 항목들을 한줄씩 불러옴
 print(line)
@@ -114,7 +114,7 @@ def getTheme(theme):#여행테마를 입력하면 해당 테마를 가지고 있
         else:
             cmp = []    #비교할 대상
             
-            for t in theme[0].split(','):
+            for t in theme[0].split(',')[:-1]:
                 cmp.extend(category[t]) #사용자가 선택한 테마의 키워드들을 비교 리스트에 담는다.
             kwd = data['키워드'][data['인덱스']==k].iloc[0]
             for elem in kwd.split(','): # 해당 관광지의 키워드들을 하나씩 비교
@@ -137,6 +137,24 @@ def parking(park):#관광지에 주차장이 있다면 추가점수 5점
         pass
 
     
+def blog():#블로그 리뷰수에 비례하여 관광지 추가점수를 부여
+    blogTable=data['리뷰수'] #블로그 리뷰수를 불러옴
+    df3 = pd.DataFrame(blogTable)
+    blog_result = df3['리뷰수'].tolist()
+    
+    max_blog=max(blog_result)
+    blog_ans=list(map(lambda x : x/max_blog*5, blog_result))# 가장 많은 리뷰수를 기준으로 5점을 부여하고 리뷰수에 비례해 점수 차등부여
+    i=0
+    while i <len(total):
+        total[i]=total[i]+blog_ans[i]
+        i=i+1
+    
+    
+    
+    
+
+                   
+    
 
 if __name__ == "__main__": 
 
@@ -147,7 +165,7 @@ if __name__ == "__main__":
 
     getTheme([line[7]])#여행테마 입력
     parking(line[6])#주차여부 확인
-    
+    blog()#리뷰개수에 따른 관광지 추가점수
     for n in stop:#여행날짜에 휴일인 관광지는 0점 처리
         total[n]=0
     
