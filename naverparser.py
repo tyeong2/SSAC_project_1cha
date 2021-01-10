@@ -67,31 +67,31 @@ def info_parser(kwd):
     return result
 
 #네이버 데이터랩 테마키워드 파싱
-def naver_parser(kwd):
+def tag_parser(search):
     baseUrl = 'https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query='
-    url = baseUrl + quote_plus(kwd)
+    url = baseUrl + quote_plus(search)
     html = urllib.request.urlopen(url).read()
     soup = BeautifulSoup(html,'html.parser')
-    driver = webdriver.Chrome(executable_path="C:\\pythonProject\\chromedriver")
-    try:
-        #테마키워드 영역
-        title = soup.find_all('a', class_ ="api_more_theme")
-        newurl = title[0].get('href')
 
-        #셀레니움 동작
-        driver.get(newurl)
+    theme = soup.find_all('div', class_='theme_kwd_area')
+    #테마 키워드가 없는 경우
+    if theme == []:
+        return ['NaN', 'NaN', 'NaN']
+    
+    for t in theme:
+        theme_list = t.find_all('li', class_='list_item')
 
-        time.sleep(5)
-        driver.implicitly_wait(5)
+    kwd_list = []
+    for kwd in theme_list:
+        kwd_list.append(kwd.get_text(strip=True))
 
-        html02 = driver.page_source  # 문서화 한다
-        soup02 = BeautifulSoup(html02, 'html.parser')
-        # result = soup02.find('div', class_='score_total').find('strong', class_='total').find_all('em')
-        # result = soup02.find('span', class_="_3XamX")
-        result = soup02.find('div', class_="place_section no_margin")
-        contents = soup02.select("div > div.ps-content > div > div > div .item_search")
-        name = driver.find_element_by_xpath('//*[@id="_title"]/span[1]')
-        runtime = driver.find_element_by_xpath('//*[@id="app-root"]/div/div[2]/div[5]/div/div[2]/div/ul/li[4]/div/a/div[1]/div/span')
-    except:
-        pass
+    tmp = ['NaN', 'NaN', 'NaN']
+    for kwd in kwd_list:
+        if kwd[0:3] == '분위기':
+            tmp[0] = kwd[3:]
+        elif kwd[0:3] == '인기토':
+            tmp[1] = kwd[4:]
+        elif kwd[0:3] == '찾는목':
+            tmp[2] = kwd[4:]
 
+    return tmp
